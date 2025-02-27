@@ -19,6 +19,8 @@ const Properties = () => (
             <Card.Body>
               <Card.Title>{property.title}</Card.Title>
               <Card.Text>{property.description}</Card.Text>
+              <Card.Text>{property.price}</Card.Text>
+              <Card.Text>{property.area}</Card.Text>
               <Button as={Link} to={`/properties/${property.id}`} variant="primary">Más Detalles</Button>
             </Card.Body>
           </Card>

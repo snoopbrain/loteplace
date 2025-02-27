@@ -7,7 +7,7 @@ const PropertyDetails = () => {
   const property = properties.find(p => p.id === parseInt(id));
 
   if (!property) {
-    return <h1>Property not found</h1>;
+    return <h1>Propiedad no encontrada</h1>;
   }
 
   return (
@@ -15,6 +15,7 @@ const PropertyDetails = () => {
       <h1>{property.title}</h1>
       <img src={property.image} alt={property.title} />
       <p>{property.description}</p>
+      <p>{property.price}</p>
     </div>
   );
 };
