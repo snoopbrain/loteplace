@@ -12,7 +12,7 @@ const Home = () => {
     <div>
       <div className="hero-section">
         <Container className="text-center text-white">
-          <h1>Welcome to Real Estate</h1>
+          <h1>Welcome Beach</h1>
           <p>Your dream home awaits. Discover a place you'll love to live.</p>
           <Button as={Link} to="/properties" variant="primary" size="lg">View All Properties</Button>
         </Container>
