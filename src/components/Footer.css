@@ -1,0 +1,40 @@
+.footer {
+    background-color: #343a40;
+    color: #f8f9fa;
+  }
+  
+  .footer h5 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .footer p, .footer a {
+    font-size: 1rem;
+    color: #f8f9fa;
+    text-decoration: none;
+  }
+  
+  .footer a:hover {
+    color: #adb5bd;
+  }
+  
+  .footer .list-unstyled {
+    padding-left: 0;
+  }
+  
+  .footer .list-unstyled li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .footer .d-flex a {
+    color: #f8f9fa;
+    transition: color 0.3s ease;
+  }
+  
+  .footer .d-flex a:hover {
+    color: #adb5bd;
+  }
+  
+  .footer .text-center {
+    margin-top: 2rem;
+  }

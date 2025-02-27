@@ -1,0 +1,47 @@
+.hero-section {
+    background: url('https://via.placeholder.com/1500x500') no-repeat center center;
+    background-size: cover;
+    color: white;
+    padding: 100px 0;
+  }
+  
+  .hero-section h1 {
+    font-size: 3rem;
+    font-weight: bold;
+  }
+  
+  .hero-section p {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+  }
+  
+  .property-card img {
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .property-card {
+    transition: transform 0.2s;
+  }
+  
+  .property-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .carousel-item img {
+    max-height: 500px;
+    object-fit: cover;
+  }
+  
+  .blockquote {
+    border-left: 5px solid #ddd;
+    padding-left: 15px;
+    margin-left: 0;
+    margin-right: 0;
+    font-size: 1.2em;
+  }
+  
+  .blockquote-footer {
+    font-size: 0.875em;
+    color: #6c757d;
+  }
