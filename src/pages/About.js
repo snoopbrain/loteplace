@@ -6,31 +6,31 @@ const teamMembers = [
     name: 'John Doe',
     position: 'CEO',
     image: 'https://via.placeholder.com/150',
-    bio: 'John has over 20 years of experience in the real estate industry and leads the company with a vision for excellence.'
+    bio: 'John tiene más de 20 años de experiencia en la industria inmobiliaria y lidera la empresa con una visión de excelencia.'
   },
   {
     name: 'Jane Smith',
     position: 'COO',
     image: 'https://via.placeholder.com/150',
-    bio: 'Jane oversees all operational aspects of the business, ensuring everything runs smoothly and efficiently.'
+    bio: 'Jane supervisa todos los aspectos operativos del negocio, asegurando que todo funcione sin problemas y de manera eficiente.'
   },
   {
     name: 'Sam Wilson',
     position: 'CFO',
     image: 'https://via.placeholder.com/150',
-    bio: 'Sam manages the financial actions of the company, focusing on profitability and growth.'
+    bio: 'Sam gestiona las acciones financieras de la empresa, enfocándose en la rentabilidad y el crecimiento.'
   }
 ];
 
 const testimonials = [
   {
     name: 'Emily Brown',
-    feedback: 'The team at Real Estate were incredibly helpful and professional. They helped us find our dream home!',
+    feedback: 'El equipo de Bienes Raíces fue increíblemente servicial y profesional. ¡Nos ayudaron a encontrar la casa de nuestros sueños!',
     image: 'https://via.placeholder.com/150'
   },
   {
     name: 'Michael Johnson',
-    feedback: 'A wonderful experience from start to finish. Highly recommend their services!',
+    feedback: 'Una experiencia maravillosa de principio a fin. ¡Recomiendo mucho sus servicios!',
     image: 'https://via.placeholder.com/150'
   }
 ];
@@ -39,37 +39,37 @@ const About = () => (
   <Container className="my-5">
     <Row className="mb-4">
       <Col>
-        <h1>About Us</h1>
+        <h1>Sobre Nosotros</h1>
         <p>
-          Welcome to Real Estate, your trusted partner in finding the perfect home. With over two decades of experience, we have been helping people find their dream homes with ease and confidence.
+          Bienvenido a Bienes Raíces, tu socio de confianza para encontrar el hogar perfecto. Con más de dos décadas de experiencia, hemos ayudado a muchas personas a encontrar su casa ideal con facilidad y confianza.
         </p>
       </Col>
     </Row>
 
     <Row className="mb-4">
       <Col>
-        <h2>Our History</h2>
+        <h2>Nuestra Historia</h2>
         <p>
-          Established in 2000, Real Estate has grown from a small local agency to a nationally recognized company. Our commitment to excellence and customer satisfaction has been the cornerstone of our success.
+          Fundada en el año 2000, Bienes Raíces ha pasado de ser una pequeña agencia local a una empresa reconocida a nivel nacional. Nuestro compromiso con la excelencia y la satisfacción del cliente ha sido la clave de nuestro éxito.
         </p>
       </Col>
     </Row>
 
     <Row className="mb-4">
       <Col>
-        <h2>Mission and Vision</h2>
+        <h2>Misión y Visión</h2>
         <p>
-          <strong>Mission:</strong> To provide exceptional real estate services with integrity, professionalism, and respect for our clients and the community.
+          <strong>Misión:</strong> Brindar servicios inmobiliarios excepcionales con integridad, profesionalismo y respeto hacia nuestros clientes y la comunidad.
         </p>
         <p>
-          <strong>Vision:</strong> To be the leading real estate company known for transforming lives through outstanding service and a dedication to excellence.
+          <strong>Visión:</strong> Ser la empresa líder en bienes raíces, reconocida por transformar vidas a través de un servicio excepcional y un firme compromiso con la excelencia.
         </p>
       </Col>
     </Row>
 
     <Row className="mb-4">
       <Col>
-        <h2>Meet Our Team</h2>
+        <h2>Conoce a Nuestro Equipo</h2>
         <Row>
           {teamMembers.map(member => (
             <Col key={member.name} sm={12} md={4} className="mb-4">
@@ -89,7 +89,7 @@ const About = () => (
 
     <Row className="mb-4">
       <Col>
-        <h2>Testimonials</h2>
+        <h2>Testimonios</h2>
         <Carousel>
           {testimonials.map((testimonial, index) => (
             <Carousel.Item key={index}>

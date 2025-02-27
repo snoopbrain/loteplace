@@ -18,9 +18,9 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission (e.g., send data to a server)
-    console.log('Form data submitted:', formData);
-    // Reset form fields
+    // Manejar el envío del formulario (por ejemplo, enviar datos a un servidor)
+    console.log('Datos del formulario enviados:', formData);
+    // Restablecer los campos del formulario
     setFormData({
       name: '',
       email: '',
@@ -32,26 +32,26 @@ const Contact = () => {
     <Container className="my-5">
       <Row className="mb-4 text-center">
         <Col>
-          <h1>Contact Us</h1>
-          <p>We would love to hear from you. Please fill out the form below to get in touch with us.</p>
+          <h1>Contáctanos</h1>
+          <p>Nos encantaría saber de ti. Por favor, completa el siguiente formulario para ponerte en contacto con nosotros.</p>
         </Col>
       </Row>
 
       <Row className="mb-4">
         <Col md={6}>
-          <h2>Contact Details</h2>
-          <p><strong>Address:</strong> 123 Real Estate St, City, Country</p>
-          <p><strong>Phone:</strong> +1 (234) 567-890</p>
-          <p><strong>Email:</strong> info@realestate.com</p>
+          <h2>Detalles de Contacto</h2>
+          <p><strong>Dirección:</strong> 123 Calle Bienes Raíces, Ciudad, País</p>
+          <p><strong>Teléfono:</strong> +1 (234) 567-890</p>
+          <p><strong>Correo Electrónico:</strong> info@bienesraices.com</p>
         </Col>
         <Col md={6}>
-          <h2>Contact Form</h2>
+          <h2>Formulario de Contacto</h2>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formName">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>Nombre</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter your name"
+                placeholder="Ingresa tu nombre"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
@@ -60,10 +60,10 @@ const Contact = () => {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formEmail">
-              <Form.Label>Email address</Form.Label>
+              <Form.Label>Correo Electrónico</Form.Label>
               <Form.Control
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Ingresa tu correo electrónico"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
@@ -72,11 +72,11 @@ const Contact = () => {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formMessage">
-              <Form.Label>Message</Form.Label>
+              <Form.Label>Mensaje</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
-                placeholder="Enter your message"
+                placeholder="Ingresa tu mensaje"
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
@@ -85,7 +85,7 @@ const Contact = () => {
             </Form.Group>
 
             <Button variant="primary" type="submit">
-              Submit
+              Enviar
             </Button>
           </Form>
         </Col>

@@ -7,8 +7,8 @@ const Properties = () => (
   <Container className="my-5">
     <Row className="mb-4 text-center">
       <Col>
-        <h1>Properties</h1>
-        <p>Discover our wide range of properties to find the perfect home for you.</p>
+        <h1>Propiedades</h1>
+        <p>Descubre nuestra amplia variedad de propiedades y encuentra el hogar perfecto para ti.</p>
       </Col>
     </Row>
     <Row>
@@ -19,7 +19,7 @@ const Properties = () => (
             <Card.Body>
               <Card.Title>{property.title}</Card.Title>
               <Card.Text>{property.description}</Card.Text>
-              <Button as={Link} to={`/properties/${property.id}`} variant="primary">More Details</Button>
+              <Button as={Link} to={`/properties/${property.id}`} variant="primary">Más Detalles</Button>
             </Card.Body>
           </Card>
         </Col>
