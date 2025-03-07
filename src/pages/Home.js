@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Row, Col, Card, Button, Carousel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import properties from '../data/properties';
-import testimonials from './testimonials';
+import testimonials from './Testimonials';
 import './Home.css'; // Importar CSS personalizado
 
 const Home = () => {
