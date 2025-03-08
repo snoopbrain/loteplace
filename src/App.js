@@ -11,7 +11,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './pages/authentication/Login';
 import Register from './pages/authentication/Register';
-import AdminProperties from './pages/admin/AdminProperties';
+import MyProperties from './pages/MyProperties';
 
 export const AuthContext = createContext(null);
 
@@ -37,7 +37,7 @@ function App() {
               <Route path="/properties" element={<Properties />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/properties/:id" element={<PropertyDetails />} />
-              <Route path="/your_properties" element={<AdminProperties />} />
+              <Route path="/MyProperties" element={<MyProperties />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
             </Routes>
