@@ -1,24 +1,24 @@
-// MyProperties.js
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Row, Col, Card, Button, Spinner, Form } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Spinner, Form, Modal } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { getPropertiesByUser, createProperty, deleteProperty } from '../../services/propertiesService';
+import { getPropertiesByUser, createProperty, deleteProperty, updateProperty } from '../../services/propertiesService';
 import { AuthContext } from '../../App';
-import './MyProperties.css'; // Tus estilos personalizados (opcional)
+import './MyProperties.css';
 
 const MyProperties = () => {
   const { user } = useContext(AuthContext);
   const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);       // Spinner al obtener propiedades
-  const [submitting, setSubmitting] = useState(false); // Spinner al crear propiedad
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [newProperty, setNewProperty] = useState({
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [editedProperty, setEditedProperty] = useState({
     title: '',
     description: '',
     price: '',
     location: '',
     area: '',
-    image: null,
   });
 
   const navigate = useNavigate();
@@ -44,20 +44,41 @@ const MyProperties = () => {
     }
   }, [user]);
 
-  // Manejo de inputs
-  const handleInputChange = (e) => {
+  // Manejo de inputs del formulario de edición
+  const handleEditInputChange = (e) => {
     const { name, value } = e.target;
-    setNewProperty({ ...newProperty, [name]: value });
+    setEditedProperty({ ...editedProperty, [name]: value });
   };
 
-  // Manejo de archivo
-  const handleFileChange = (e) => {
-    setNewProperty({ ...newProperty, image: e.target.files[0] });
+  // Abrir el modal de edición con los datos actuales de la propiedad
+  const handleEdit = (property) => {
+    setSelectedProperty(property);
+    setEditedProperty({
+      title: property.title,
+      description: property.description,
+      price: property.price,
+      location: property.location,
+      area: property.area,
+    });
+    setShowEditModal(true);
+  };
+
+  // Guardar los cambios en la propiedad
+  const handleSaveEdit = async () => {
+    if (!selectedProperty) return;
+
+    try {
+      const updatedProperty = await updateProperty(selectedProperty.id, editedProperty);
+      setProperties(properties.map((prop) => (prop.id === selectedProperty.id ? updatedProperty : prop)));
+      setShowEditModal(false);
+    } catch (error) {
+      console.error('Error al actualizar la propiedad:', error);
+      alert(`Error: ${error.message}`);
+    }
   };
 
   // Eliminar propiedad
   const handleDelete = async (propertyId) => {
-    console.log('Eliminar propiedad con ID:', propertyId);
     if (window.confirm('¿Estás seguro de que deseas eliminar esta propiedad?')) {
       try {
         await deleteProperty(propertyId);
@@ -66,46 +87,6 @@ const MyProperties = () => {
         console.error('Error al eliminar la propiedad:', error);
         alert(`Error: ${error.message}`);
       }
-    }
-  };
-
-  // Enviar formulario para crear propiedad
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!user || !user.id) {
-      console.error('No se encontró un usuario autenticado');
-      return;
-    }
-
-    setSubmitting(true); // Activar spinner de envío
-
-    const formData = new FormData();
-    formData.append('title', newProperty.title);
-    formData.append('description', newProperty.description);
-    formData.append('price', newProperty.price);
-    formData.append('location', newProperty.location);
-    formData.append('area', newProperty.area);
-    formData.append('image', newProperty.image);
-    formData.append('usuarioId', user.id);
-
-    try {
-      const createdProperty = await createProperty(formData);
-      setProperties([...properties, createdProperty]);
-      setShowForm(false);
-      // Limpiar campos
-      setNewProperty({
-        title: '',
-        description: '',
-        price: '',
-        location: '',
-        area: '',
-        image: null,
-      });
-    } catch (error) {
-      console.error('Error al publicar la propiedad:', error);
-      alert(`Error: ${error.message}`);
-    } finally {
-      setSubmitting(false); // Desactivar spinner de envío
     }
   };
 
@@ -121,103 +102,9 @@ const MyProperties = () => {
       <Row className="mb-4 text-center">
         <Col>
           <h1>Mis Propiedades</h1>
-          <p>Aquí puedes ver todas las propiedades que tienes registradas y publicar nuevas.</p>
-          <Button variant="success" onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'Ocultar Formulario' : 'Publicar Nueva Propiedad'}
-          </Button>
+          <p>Aquí puedes ver todas las propiedades que tienes registradas y editar o eliminar las que desees.</p>
         </Col>
       </Row>
-
-      {/* Formulario para publicar nueva propiedad */}
-      {showForm && (
-        <Row className="justify-content-center mb-4">
-          <Col md={6}>
-            <div className="form-container p-4">
-              <h2 className="text-center mb-4">Publicar Nueva Propiedad</h2>
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Título</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="title"
-                    value={newProperty.title}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Descripción</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    name="description"
-                    value={newProperty.description}
-                    onChange={handleInputChange}
-                    rows={3}
-                    required
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Precio</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="price"
-                    value={newProperty.price}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Ubicación</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="location"
-                    value={newProperty.location}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Área (m²)</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="area"
-                    value={newProperty.area}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Imagen</Form.Label>
-                  <Form.Control
-                    type="file"
-                    name="image"
-                    onChange={handleFileChange}
-                    required
-                  />
-                </Form.Group>
-
-                <div className="text-center">
-                  <Button variant="primary" type="submit" disabled={submitting}>
-                    {submitting ? (
-                      <>
-                        <Spinner animation="border" size="sm" className="me-2" />
-                        Publicando...
-                      </>
-                    ) : (
-                      'Publicar Propiedad'
-                    )}
-                  </Button>
-                </div>
-              </Form>
-            </div>
-          </Col>
-        </Row>
-      )}
 
       {/* Spinner principal mientras se cargan las propiedades */}
       {loading ? (
@@ -255,14 +142,10 @@ const MyProperties = () => {
                       >
                         Más Detalles
                       </Button>
-                      <Button variant="warning" className="me-2">
+                      <Button variant="warning" className="me-2" onClick={() => handleEdit(property)}>
                         Editar
                       </Button>
-                      {/* Aquí pasamos property.id correctamente */}
-                      <Button
-                        onClick={() => handleDelete(property.id)}
-                        variant="danger"
-                      >
+                      <Button variant="danger" onClick={() => handleDelete(property.id)}>
                         Eliminar
                       </Button>
                     </div>
@@ -277,6 +160,75 @@ const MyProperties = () => {
           )}
         </Row>
       )}
+
+      {/* Modal de edición */}
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Propiedad</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Título</Form.Label>
+              <Form.Control
+                type="text"
+                name="title"
+                value={editedProperty.title}
+                onChange={handleEditInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Descripción</Form.Label>
+              <Form.Control
+                as="textarea"
+                name="description"
+                value={editedProperty.description}
+                onChange={handleEditInputChange}
+                rows={3}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Precio</Form.Label>
+              <Form.Control
+                type="number"
+                name="price"
+                value={editedProperty.price}
+                onChange={handleEditInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Ubicación</Form.Label>
+              <Form.Control
+                type="text"
+                name="location"
+                value={editedProperty.location}
+                onChange={handleEditInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Área (m²)</Form.Label>
+              <Form.Control
+                type="number"
+                name="area"
+                value={editedProperty.area}
+                onChange={handleEditInputChange}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            Cancelar
+          </Button>
+          <Button variant="success" onClick={handleSaveEdit}>
+            Aceptar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

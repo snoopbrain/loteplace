@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Spinner, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import './Properties.css';
 
 const Properties = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    location: '',
+    areaMin: '',
+    priceMin: '',
+    priceMax: '',
+  });
 
   useEffect(() => {
     fetch('http://146.190.143.234:8080/api/lotes')
@@ -24,12 +30,84 @@ const Properties = () => {
       });
   }, []);
 
+  // Función para manejar cambios en los filtros
+  const handleFilterChange = (e) => {
+    setFilters({ ...filters, [e.target.name]: e.target.value });
+  };
+
+  const filteredProperties = properties.filter(property => {
+    const price = typeof property.price === "string"
+      ? parseFloat(property.price.replace(/[^0-9.-]+/g, ""))
+      : parseFloat(property.price);
+
+    const area = parseFloat(property.area);
+
+    return (
+      (filters.location ? property.location.toLowerCase().includes(filters.location.toLowerCase()) : true) &&
+      (filters.areaMin ? area >= parseFloat(filters.areaMin) : true) &&
+      (filters.priceMin ? price >= parseFloat(filters.priceMin) : true) &&
+      (filters.priceMax ? price <= parseFloat(filters.priceMax) : true)
+    );
+  });
+
   return (
     <Container className="my-5">
       <Row className="mb-4 text-center">
         <Col>
           <h1>Propiedades</h1>
           <p>Descubre nuestra amplia variedad de propiedades y encuentra el hogar perfecto para ti.</p>
+        </Col>
+      </Row>
+
+      {/* Filtros */}
+      <Row className="mb-4">
+        <Col md={3}>
+          <Form.Group>
+            <Form.Label>Ubicación</Form.Label>
+            <Form.Control
+              type="text"
+              name="location"
+              value={filters.location}
+              onChange={handleFilterChange}
+              placeholder="Ej: Ciudad, barrio..."
+            />
+          </Form.Group>
+        </Col>
+        <Col md={3}>
+          <Form.Group>
+            <Form.Label>Área Mínima (m²)</Form.Label>
+            <Form.Control
+              type="number"
+              name="areaMin"
+              value={filters.areaMin}
+              onChange={handleFilterChange}
+              placeholder="Ej: 50"
+            />
+          </Form.Group>
+        </Col>
+        <Col md={3}>
+          <Form.Group>
+            <Form.Label>Precio Mínimo ($)</Form.Label>
+            <Form.Control
+              type="number"
+              name="priceMin"
+              value={filters.priceMin}
+              onChange={handleFilterChange}
+              placeholder="Ej: 50000"
+            />
+          </Form.Group>
+        </Col>
+        <Col md={3}>
+          <Form.Group>
+            <Form.Label>Precio Máximo ($)</Form.Label>
+            <Form.Control
+              type="number"
+              name="priceMax"
+              value={filters.priceMax}
+              onChange={handleFilterChange}
+              placeholder="Ej: 300000"
+            />
+          </Form.Group>
         </Col>
       </Row>
 
@@ -41,8 +119,8 @@ const Properties = () => {
         </div>
       ) : (
         <Row>
-          {properties.length > 0 ? (
-            properties.map(property => (
+          {filteredProperties.length > 0 ? (
+            filteredProperties.map(property => (
               <Col key={property.id} sm={12} md={6} lg={4} className="mb-4">
                 <Card className="property-card modern">
                   <div className="property-image-wrapper">
@@ -66,7 +144,7 @@ const Properties = () => {
             ))
           ) : (
             <Col className="text-center">
-              <p>No hay propiedades disponibles en este momento.</p>
+              <p>No hay propiedades disponibles con los filtros seleccionados.</p>
             </Col>
           )}
         </Row>

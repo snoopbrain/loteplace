@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import Filtros from '../components/Filtros';
 import './Home.css';
 
 const Home = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    location: '',
-    type: '',
-    priceMin: '',
-    priceMax: '',
-  });
 
   useEffect(() => {
     fetch('http://146.190.143.234:8080/api/lotes')
@@ -30,24 +23,6 @@ const Home = () => {
         setLoading(false);
       });
   }, []);
-
-  const handleFilterChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
-  };
-
-  const filteredProperties = properties.filter(property => {
-    const price = typeof property.price === "string"
-      ? parseFloat(property.price.replace(/[^0-9.-]+/g, ""))
-      : parseFloat(property.price);
-
-    return (
-      (filters.location ? property.location.toLowerCase().includes(filters.location.toLowerCase()) : true) &&
-      (filters.type ? property.type === filters.type : true) &&
-      (filters.priceMin ? price >= parseFloat(filters.priceMin) : true) &&
-      (filters.priceMax ? price <= parseFloat(filters.priceMax) : true)
-    );
-  });
-
 
   return (
     <div>
@@ -76,11 +51,7 @@ const Home = () => {
         </Container>
       </div>
 
-      
       <Container className="my-4">
-        
-        <Filtros filters={filters} handleFilterChange={handleFilterChange} />
-
         {loading ? (
           <div className="text-center my-5">
             <Spinner animation="border" role="status">
@@ -89,8 +60,8 @@ const Home = () => {
           </div>
         ) : (
           <Row>
-            {filteredProperties.length > 0 ? (
-              filteredProperties.map(property => (
+            {properties.length > 0 ? (
+              properties.map(property => (
                 <Col key={property.id} sm={12} md={6} lg={4} className="mb-4">
                   <Card className="property-card modern">
                     <div className="property-image-wrapper">

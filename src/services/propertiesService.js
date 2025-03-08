@@ -25,7 +25,7 @@ export const createProperty = async (formData) => {
 
     console.log("Código de estado:", response.status);
 
-    // Verifica si la respuesta tiene contenido antes de intentar convertirla a JSON
+    // Verificamos si la respuesta tiene contenido antes de intentar convertirla a JSON
     const text = await response.text();
     console.log("Respuesta de la API:", text);
 
@@ -59,3 +59,37 @@ export const deleteProperty = async (propertyId) => {
     throw error;
   }
 }
+
+export const updateProperty = async (propertyId, updatedData) => {
+  try {
+    const formData = new FormData();
+    formData.append('title', updatedData.title);
+    formData.append('description', updatedData.description);
+    formData.append('price', updatedData.price);
+    formData.append('location', updatedData.location);
+    formData.append('area', updatedData.area);
+
+    // Si hay una nueva imagen, la añadimos a FormData
+    if (updatedData.image) {
+      formData.append('image', updatedData.image);
+    }
+
+    const response = await fetch(`${APIURL}/${propertyId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getToken()}`,
+      },
+      body: formData, // Enviamos FormData en lugar de JSON
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(errorMessage || 'Error al actualizar la propiedad');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error en updateProperty:', error);
+    throw error;
+  }
+};
