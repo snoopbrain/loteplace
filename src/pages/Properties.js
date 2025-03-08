@@ -51,6 +51,7 @@ const Properties = () => {
                     <Card.Img variant="top" src={property.image} className="property-image" />
                   </div>
                   <Card.Body className="property-body">
+                    <Card.Title className="property-title">{property.title}</Card.Title>
                     <div className="property-price">${property.price}</div>
                     <div className="property-area">{property.area} m²</div>
                     <div className="property-location">{property.location}</div>

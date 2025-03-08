@@ -1,29 +1,33 @@
-// MyProperties.js (Layout estándar)
+// MyProperties.js
 import React, { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col, Card, Button, Spinner, Form } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { getPropertiesByUser, createProperty } from '../../services/propertiesService';
+import { Link, useNavigate } from 'react-router-dom';
+import { getPropertiesByUser, createProperty, deleteProperty } from '../../services/propertiesService';
 import { AuthContext } from '../../App';
-import { useNavigate } from 'react-router-dom';
+import './MyProperties.css'; // Tus estilos personalizados (opcional)
 
 const MyProperties = () => {
   const { user } = useContext(AuthContext);
   const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);       // Spinner al obtener propiedades
+  const [submitting, setSubmitting] = useState(false); // Spinner al crear propiedad
   const [showForm, setShowForm] = useState(false);
   const [newProperty, setNewProperty] = useState({
     title: '',
     description: '',
     price: '',
     location: '',
+    area: '',
     image: null,
   });
+
   const navigate = useNavigate();
 
+  // Cargar propiedades del usuario
   useEffect(() => {
     if (user && user.id) {
       getPropertiesByUser(user.id)
-        .then(data => {
+        .then((data) => {
           if (Array.isArray(data)) {
             setProperties(data);
           } else {
@@ -31,7 +35,7 @@ const MyProperties = () => {
           }
           setLoading(false);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error al obtener datos:', error);
           setLoading(false);
         });
@@ -40,15 +44,32 @@ const MyProperties = () => {
     }
   }, [user]);
 
+  // Manejo de inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewProperty({ ...newProperty, [name]: value });
   };
 
+  // Manejo de archivo
   const handleFileChange = (e) => {
     setNewProperty({ ...newProperty, image: e.target.files[0] });
   };
 
+  // Eliminar propiedad
+  const handleDelete = async (propertyId) => {
+    console.log('Eliminar propiedad con ID:', propertyId);
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta propiedad?')) {
+      try {
+        await deleteProperty(propertyId);
+        setProperties(properties.filter((p) => p.id !== propertyId));
+      } catch (error) {
+        console.error('Error al eliminar la propiedad:', error);
+        alert(`Error: ${error.message}`);
+      }
+    }
+  };
+
+  // Enviar formulario para crear propiedad
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user || !user.id) {
@@ -56,11 +77,14 @@ const MyProperties = () => {
       return;
     }
 
+    setSubmitting(true); // Activar spinner de envío
+
     const formData = new FormData();
     formData.append('title', newProperty.title);
     formData.append('description', newProperty.description);
     formData.append('price', newProperty.price);
     formData.append('location', newProperty.location);
+    formData.append('area', newProperty.area);
     formData.append('image', newProperty.image);
     formData.append('usuarioId', user.id);
 
@@ -68,13 +92,24 @@ const MyProperties = () => {
       const createdProperty = await createProperty(formData);
       setProperties([...properties, createdProperty]);
       setShowForm(false);
-      setNewProperty({ title: '', description: '', price: '', location: '', image: null });
+      // Limpiar campos
+      setNewProperty({
+        title: '',
+        description: '',
+        price: '',
+        location: '',
+        area: '',
+        image: null,
+      });
     } catch (error) {
       console.error('Error al publicar la propiedad:', error);
       alert(`Error: ${error.message}`);
+    } finally {
+      setSubmitting(false); // Desactivar spinner de envío
     }
   };
 
+  // Verificar usuario autenticado
   if (!user) {
     console.error('No se encontró un usuario autenticado');
     navigate('/login');
@@ -93,78 +128,108 @@ const MyProperties = () => {
         </Col>
       </Row>
 
+      {/* Formulario para publicar nueva propiedad */}
       {showForm && (
-        <Row>
-          <Col md={6} className="mb-4">
-            <h2>Publicar Nueva Propiedad</h2>
-            <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-3">
-                <Form.Label>Título</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="title"
-                  value={newProperty.title}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Descripción</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  name="description"
-                  value={newProperty.description}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Precio</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="price"
-                  value={newProperty.price}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Ubicación</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="location"
-                  value={newProperty.location}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Imagen</Form.Label>
-                <Form.Control
-                  type="file"
-                  name="image"
-                  onChange={handleFileChange}
-                  required
-                />
-              </Form.Group>
-              <Button variant="primary" type="submit">
-                Publicar Propiedad
-              </Button>
-            </Form>
+        <Row className="justify-content-center mb-4">
+          <Col md={6}>
+            <div className="form-container p-4">
+              <h2 className="text-center mb-4">Publicar Nueva Propiedad</h2>
+              <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Título</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="title"
+                    value={newProperty.title}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Descripción</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    name="description"
+                    value={newProperty.description}
+                    onChange={handleInputChange}
+                    rows={3}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Precio</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="price"
+                    value={newProperty.price}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Ubicación</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="location"
+                    value={newProperty.location}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Área (m²)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="area"
+                    value={newProperty.area}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Imagen</Form.Label>
+                  <Form.Control
+                    type="file"
+                    name="image"
+                    onChange={handleFileChange}
+                    required
+                  />
+                </Form.Group>
+
+                <div className="text-center">
+                  <Button variant="primary" type="submit" disabled={submitting}>
+                    {submitting ? (
+                      <>
+                        <Spinner animation="border" size="sm" className="me-2" />
+                        Publicando...
+                      </>
+                    ) : (
+                      'Publicar Propiedad'
+                    )}
+                  </Button>
+                </div>
+              </Form>
+            </div>
           </Col>
         </Row>
       )}
 
+      {/* Spinner principal mientras se cargan las propiedades */}
       {loading ? (
         <div className="text-center my-5">
           <Spinner animation="border" role="status">
-            <span className="visually-hidden">Cargando...</span>
+            <span className="visually-hidden">Cargando propiedades...</span>
           </Spinner>
         </div>
       ) : (
         <Row className="row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 align-items-stretch">
           {properties.length > 0 ? (
-            properties.map(property => (
+            properties.map((property) => (
               <Col key={property.id} className="d-flex">
                 <Card className="h-100 w-100 d-flex flex-column">
                   <Card.Img
@@ -175,11 +240,32 @@ const MyProperties = () => {
                   <Card.Body className="d-flex flex-column">
                     <Card.Title>{property.title}</Card.Title>
                     <Card.Text className="flex-grow-1">{property.description}</Card.Text>
-                    <Card.Text><strong>Precio:</strong> ${property.price}</Card.Text>
-                    <Card.Text><strong>Ubicación:</strong> {property.location}</Card.Text>
-                    <Button as={Link} to={`/properties/${property.id}`} variant="primary" className="mt-auto">
-                      Más Detalles
-                    </Button>
+                    <Card.Text>
+                      <strong>Precio:</strong> ${property.price}
+                    </Card.Text>
+                    <Card.Text>
+                      <strong>Ubicación:</strong> {property.location}
+                    </Card.Text>
+                    <div className="mt-auto">
+                      <Button
+                        as={Link}
+                        to={`/properties/${property.id}`}
+                        variant="primary"
+                        className="me-2"
+                      >
+                        Más Detalles
+                      </Button>
+                      <Button variant="warning" className="me-2">
+                        Editar
+                      </Button>
+                      {/* Aquí pasamos property.id correctamente */}
+                      <Button
+                        onClick={() => handleDelete(property.id)}
+                        variant="danger"
+                      >
+                        Eliminar
+                      </Button>
+                    </div>
                   </Card.Body>
                 </Card>
               </Col>

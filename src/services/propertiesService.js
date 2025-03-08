@@ -1,5 +1,10 @@
 const APIURL = 'http://146.190.143.234:8080/api/lotes';
 
+const getToken = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  return user ? user.token : null;
+};
+
 export const getPropertiesByUser = async (userId) => {
   const response = await fetch(`${APIURL}/usuario/${userId}`);
   if (!response.ok) {
@@ -13,7 +18,7 @@ export const createProperty = async (formData) => {
     const response = await fetch(APIURL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${getToken()}`,
       },
       body: formData,
     });
@@ -34,3 +39,23 @@ export const createProperty = async (formData) => {
     throw error;
   }
 };
+
+export const deleteProperty = async (propertyId) => {
+  try {
+    const response = await fetch(`${APIURL}/${propertyId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getToken()}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al eliminar la propiedad');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error en deleteProperty:', error);
+    throw error;
+  }
+}
