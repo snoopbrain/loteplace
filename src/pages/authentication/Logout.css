@@ -1,0 +1,29 @@
+/* Contenedor para la vista de logout */
+.logout-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 100px;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+}
+
+.logout-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Botón de logout */
+.logout-button {
+    padding: 10px 20px;
+    background-color: #dc3545;
+    /* Rojo */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #c82333;
+}
