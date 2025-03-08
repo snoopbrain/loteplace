@@ -1,12 +1,53 @@
-import React from 'react';
-import { Container, Row, Col, Card, Button, Carousel } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Button, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import properties from '../data/properties';
-import testimonials from './Testimonials';
-import './Home.css'; // Importar CSS personalizado
+import Filtros from '../components/Filtros';
+import './Home.css';
 
 const Home = () => {
-  const featuredProperties = properties.slice(0, 3); // Seleccionar las primeras 3 propiedades como destacadas
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    location: '',
+    type: '',
+    priceMin: '',
+    priceMax: '',
+  });
+
+  useEffect(() => {
+    fetch('http://146.190.143.234:8080/api/lotes')
+      .then(response => response.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setProperties(data);
+        } else {
+          console.error('La API no devolvió un array:', data);
+        }
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error al obtener datos:', error);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleFilterChange = (e) => {
+    setFilters({ ...filters, [e.target.name]: e.target.value });
+  };
+
+  const filteredProperties = properties.filter(property => {
+    const price = typeof property.price === "string" 
+      ? parseFloat(property.price.replace(/[^0-9.-]+/g, ""))
+      : parseFloat(property.price);
+  
+    return (
+      (filters.location ? property.location.toLowerCase().includes(filters.location.toLowerCase()) : true) &&
+      (filters.type ? property.type === filters.type : true) &&
+      (filters.priceMin ? price >= parseFloat(filters.priceMin) : true) &&
+      (filters.priceMax ? price <= parseFloat(filters.priceMax) : true)
+    );
+  });
+  
 
   return (
     <div>
@@ -18,86 +59,39 @@ const Home = () => {
         </Container>
       </div>
 
-      <Container className="my-5">
-        <Row className="text-center mb-4">
-          <Col>
-            <h2>Encuentra tu Hogar Perfecto</h2>
-            <p>Ofrecemos una amplia variedad de propiedades para adaptarse a tus necesidades y presupuesto. Ya sea que busques una villa lujosa, un apartamento moderno o una acogedora cabaña, tenemos algo para todos.</p>
-          </Col>
-        </Row>
+      <Container className="my-4">
+        <Filtros filters={filters} handleFilterChange={handleFilterChange} />
 
-        <Row className="mb-4">
-          <Col>
-            <h3>Propiedades Destacadas</h3>
-            <Row>
-              {featuredProperties.map(property => (
+        {loading ? (
+          <div className="text-center my-5">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </Spinner>
+          </div>
+        ) : (
+          <Row>
+            {filteredProperties.length > 0 ? (
+              filteredProperties.map(property => (
                 <Col key={property.id} sm={12} md={6} lg={4} className="mb-4">
-                  <Card className="property-card">
+                  <Card>
                     <Card.Img variant="top" src={property.image} />
                     <Card.Body>
                       <Card.Title>{property.title}</Card.Title>
                       <Card.Text>{property.description}</Card.Text>
+                      <Card.Text><strong>Precio:</strong> {property.price}</Card.Text>
+                      <Card.Text><strong>Ubicación:</strong> {property.location}</Card.Text>
                       <Button as={Link} to={`/properties/${property.id}`} variant="primary">Más Detalles</Button>
                     </Card.Body>
                   </Card>
                 </Col>
-              ))}
-            </Row>
-          </Col>
-        </Row>
-
-        <Row className="mb-4">
-          <Col>
-            <h3>Lo Que Dicen Nuestros Clientes</h3>
-            <Carousel>
-              {testimonials.map((testimonial, index) => (
-                <Carousel.Item key={index}>
-                  <Card className="text-center">
-                    <Card.Body>
-                      <Card.Img variant="top" src={testimonial.image} className="rounded-circle w-25 mb-3" />
-                      <Card.Text className="blockquote mb-0">
-                        "{testimonial.feedback}"
-                      </Card.Text>
-                      <footer className="blockquote-footer mt-2">{testimonial.name}</footer>
-                    </Card.Body>
-                  </Card>
-                </Carousel.Item>
-              ))}
-            </Carousel>
-          </Col>
-        </Row>
-
-        <Row className="mb-4">
-          <Col>
-            <h3>¿Por Qué Elegirnos?</h3>
-            <Row>
-              <Col md={4} className="mb-4">
-                <Card className="text-center">
-                  <Card.Body>
-                    <Card.Title>Agentes Experimentados</Card.Title>
-                    <Card.Text>Nuestros agentes tienen años de experiencia en el mercado inmobiliario.</Card.Text>
-                  </Card.Body>
-                </Card>
+              ))
+            ) : (
+              <Col>
+                <p>No se encontraron propiedades.</p>
               </Col>
-              <Col md={4} className="mb-4">
-                <Card className="text-center">
-                  <Card.Body>
-                    <Card.Title>Enfoque en el Cliente</Card.Title>
-                    <Card.Text>Priorizamos las necesidades de nuestros clientes y brindamos un servicio personalizado.</Card.Text>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col md={4} className="mb-4">
-                <Card className="text-center">
-                  <Card.Body>
-                    <Card.Title>Amplia Gama de Propiedades</Card.Title>
-                    <Card.Text>Ofrecemos una variedad de propiedades para todos los gustos y presupuestos.</Card.Text>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+            )}
+          </Row>
+        )}
       </Container>
     </div>
   );

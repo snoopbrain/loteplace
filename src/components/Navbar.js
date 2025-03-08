@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Navbar, Nav, Container, Form, FormControl, Button } from 'react-bootstrap';
+import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FaUserCircle } from 'react-icons/fa';
 import './Navbar.css'; 
@@ -20,7 +20,7 @@ const NavigationBar = () => {
             <Nav.Link as={Link} to="/about" style={{ fontSize: '1.25rem' }}>Nosotros</Nav.Link>
             <Nav.Link as={Link} to="/properties" style={{ fontSize: '1.25rem' }}>Propiedades</Nav.Link>
             {user && (
-              <Nav.Link as={Link} to="/your_properties" style={{ fontSize: '1.25rem' }}>Tus Propiedades</Nav.Link>
+              <Nav.Link as={Link} to="/MyProperties" style={{ fontSize: '1.25rem' }}>Tus Propiedades</Nav.Link>
             )}
             <Nav.Link as={Link} to="/contact" style={{ fontSize: '1.25rem' }}>Contacto</Nav.Link>
           </Nav>
