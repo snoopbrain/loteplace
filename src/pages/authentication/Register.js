@@ -107,12 +107,19 @@ const Register = () => {
             type="tel"
             id="contact"
             value={contact}
-            onChange={(e) => setContact(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d*$/.test(value)) {
+                setContact(value);
+              }
+            }}
             placeholder="(+57)"
+            maxLength={10} 
             pattern="\d{10}"
             title="El número de contacto debe tener 10 dígitos"
             required
           />
+          
         </div>
         <button type="submit" className="register-button" disabled={loading}>
           {loading ? <span className="spinner"></span> : 'Registrarse'}
