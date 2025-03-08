@@ -1,8 +1,10 @@
+// MyProperties.js (Layout estándar)
 import React, { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col, Card, Button, Spinner, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { getPropertiesByUser, createProperty } from '../services/propertiesService';
-import { AuthContext } from '../App';
+import { getPropertiesByUser, createProperty } from '../../services/propertiesService';
+import { AuthContext } from '../../App';
+import { useNavigate } from 'react-router-dom';
 
 const MyProperties = () => {
   const { user } = useContext(AuthContext);
@@ -16,6 +18,7 @@ const MyProperties = () => {
     location: '',
     image: null,
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user && user.id) {
@@ -52,8 +55,7 @@ const MyProperties = () => {
       console.error('No se encontró un usuario autenticado');
       return;
     }
-    
-    
+
     const formData = new FormData();
     formData.append('title', newProperty.title);
     formData.append('description', newProperty.description);
@@ -62,21 +64,22 @@ const MyProperties = () => {
     formData.append('image', newProperty.image);
     formData.append('usuarioId', user.id);
 
-console.log("Datos enviados:", [...formData.entries()]);
-
-
     try {
       const createdProperty = await createProperty(formData);
       setProperties([...properties, createdProperty]);
       setShowForm(false);
       setNewProperty({ title: '', description: '', price: '', location: '', image: null });
     } catch (error) {
-        console.error('Error al publicar la propiedad:', error);
-        alert(`Error: ${error.message}`);
-      }
-      
+      console.error('Error al publicar la propiedad:', error);
+      alert(`Error: ${error.message}`);
+    }
   };
-  
+
+  if (!user) {
+    console.error('No se encontró un usuario autenticado');
+    navigate('/login');
+    return null;
+  }
 
   return (
     <Container className="my-5">
@@ -97,25 +100,56 @@ console.log("Datos enviados:", [...formData.entries()]);
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
                 <Form.Label>Título</Form.Label>
-                <Form.Control type="text" name="title" value={newProperty.title} onChange={handleInputChange} required />
+                <Form.Control
+                  type="text"
+                  name="title"
+                  value={newProperty.title}
+                  onChange={handleInputChange}
+                  required
+                />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Descripción</Form.Label>
-                <Form.Control as="textarea" name="description" value={newProperty.description} onChange={handleInputChange} required />
+                <Form.Control
+                  as="textarea"
+                  name="description"
+                  value={newProperty.description}
+                  onChange={handleInputChange}
+                  required
+                />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Precio</Form.Label>
-                <Form.Control type="number" name="price" value={newProperty.price} onChange={handleInputChange} required />
+                <Form.Control
+                  type="number"
+                  name="price"
+                  value={newProperty.price}
+                  onChange={handleInputChange}
+                  required
+                />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Ubicación</Form.Label>
-                <Form.Control type="text" name="location" value={newProperty.location} onChange={handleInputChange} required />
+                <Form.Control
+                  type="text"
+                  name="location"
+                  value={newProperty.location}
+                  onChange={handleInputChange}
+                  required
+                />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Imagen</Form.Label>
-                <Form.Control type="file" name="image" onChange={handleFileChange} required />
+                <Form.Control
+                  type="file"
+                  name="image"
+                  onChange={handleFileChange}
+                  required
+                />
               </Form.Group>
-              <Button variant="primary" type="submit">Publicar Propiedad</Button>
+              <Button variant="primary" type="submit">
+                Publicar Propiedad
+              </Button>
             </Form>
           </Col>
         </Row>
@@ -128,18 +162,24 @@ console.log("Datos enviados:", [...formData.entries()]);
           </Spinner>
         </div>
       ) : (
-        <Row>
+        <Row className="row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 align-items-stretch">
           {properties.length > 0 ? (
             properties.map(property => (
-              <Col key={property.id} sm={12} md={6} lg={4} className="mb-4">
-                <Card className="property-card">
-                  <Card.Img variant="top" src={property.image} />
-                  <Card.Body>
+              <Col key={property.id} className="d-flex">
+                <Card className="h-100 w-100 d-flex flex-column">
+                  <Card.Img
+                    variant="top"
+                    src={property.image}
+                    style={{ height: '200px', objectFit: 'cover' }}
+                  />
+                  <Card.Body className="d-flex flex-column">
                     <Card.Title>{property.title}</Card.Title>
-                    <Card.Text>{property.description}</Card.Text>
+                    <Card.Text className="flex-grow-1">{property.description}</Card.Text>
                     <Card.Text><strong>Precio:</strong> ${property.price}</Card.Text>
                     <Card.Text><strong>Ubicación:</strong> {property.location}</Card.Text>
-                    <Button as={Link} to={`/properties/${property.id}`} variant="primary">Más Detalles</Button>
+                    <Button as={Link} to={`/properties/${property.id}`} variant="primary" className="mt-auto">
+                      Más Detalles
+                    </Button>
                   </Card.Body>
                 </Card>
               </Col>

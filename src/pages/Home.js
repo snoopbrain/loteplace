@@ -19,7 +19,7 @@ const Home = () => {
       .then(response => response.json())
       .then(data => {
         if (Array.isArray(data)) {
-          setProperties(data);
+          setProperties(data.slice(0, 3));
         } else {
           console.error('La API no devolvió un array:', data);
         }
@@ -36,10 +36,10 @@ const Home = () => {
   };
 
   const filteredProperties = properties.filter(property => {
-    const price = typeof property.price === "string" 
+    const price = typeof property.price === "string"
       ? parseFloat(property.price.replace(/[^0-9.-]+/g, ""))
       : parseFloat(property.price);
-  
+
     return (
       (filters.location ? property.location.toLowerCase().includes(filters.location.toLowerCase()) : true) &&
       (filters.type ? property.type === filters.type : true) &&
@@ -47,7 +47,7 @@ const Home = () => {
       (filters.priceMax ? price <= parseFloat(filters.priceMax) : true)
     );
   });
-  
+
 
   return (
     <div>
@@ -55,11 +55,30 @@ const Home = () => {
         <Container className="text-center text-white">
           <h1>Bienvenido a Bienes Raíces</h1>
           <p>Tu hogar soñado te espera. Descubre un lugar donde te encantará vivir.</p>
-          <Button as={Link} to="/properties" variant="primary" size="lg">Ver Todas las Propiedades</Button>
+
+          {/* Contenedor que agrupa la imagen y el botón */}
+          <div className="hero-image-wrapper">
+            <img
+              src="https://marketplacespringboot.s3.us-east-1.amazonaws.com/db572f89-dcfb-47be-8c48-43ba0d91a806_BloqueM5.jpg"
+              alt="Hero"
+              className="hero-image"
+            />
+            <Button
+              as={Link}
+              to="/properties"
+              variant="primary"
+              size="lg"
+              className="hero-button"
+            >
+              Ver Todas las Propiedades
+            </Button>
+          </div>
         </Container>
       </div>
 
+      
       <Container className="my-4">
+        
         <Filtros filters={filters} handleFilterChange={handleFilterChange} />
 
         {loading ? (
@@ -73,21 +92,28 @@ const Home = () => {
             {filteredProperties.length > 0 ? (
               filteredProperties.map(property => (
                 <Col key={property.id} sm={12} md={6} lg={4} className="mb-4">
-                  <Card>
-                    <Card.Img variant="top" src={property.image} />
-                    <Card.Body>
-                      <Card.Title>{property.title}</Card.Title>
-                      <Card.Text>{property.description}</Card.Text>
-                      <Card.Text><strong>Precio:</strong> {property.price}</Card.Text>
-                      <Card.Text><strong>Ubicación:</strong> {property.location}</Card.Text>
-                      <Button as={Link} to={`/properties/${property.id}`} variant="primary">Más Detalles</Button>
+                  <Card className="property-card modern">
+                    <div className="property-image-wrapper">
+                      {property.isFeatured && <span className="property-badge">Destacado Gold</span>}
+                      {property.isUsed && <span className="property-used">Usado</span>}
+                      <Card.Img variant="top" src={property.image} className="property-image" />
+                    </div>
+                    <Card.Body className="property-body">
+                      <div className="property-price">${property.price}</div>
+                      <div className="property-area">{property.area} m²</div>
+                      <div className="property-location">{property.location}</div>
+                      <hr className="property-divider" />
+                      <div className="property-agent">Publicado por <strong>{property.userName}</strong></div>
+                      <Button className="property-contact modern-btn" as={Link} to={`/properties/${property.id}`}>
+                        Detalles
+                      </Button>
                     </Card.Body>
                   </Card>
                 </Col>
               ))
             ) : (
-              <Col>
-                <p>No se encontraron propiedades.</p>
+              <Col className="text-center">
+                <p>No hay propiedades disponibles en este momento.</p>
               </Col>
             )}
           </Row>

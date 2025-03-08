@@ -29,7 +29,7 @@ const PropertyDetails = () => {
       <Row>
         <Col md={8}>
           <Card className="property-details-card">
-            <Card.Img variant="top" src={property.image} className="property-details-image" />
+            <Card.Img variant="top" src={property.image} className="property-details-image property-details-image-larger" />
             <Card.Body>
               <Card.Title className="property-details-title">{property.title}</Card.Title>
               <p className="property-details-price">${property.price}</p>
@@ -43,7 +43,7 @@ const PropertyDetails = () => {
           <Card className="contact-card">
             <Card.Body>
               <div className="agent-info">
-                <img src={property.agentImage} alt={property.userName} className="agent-image" />
+                <img src={property.agentImage} alt={property.userName} className="agent-image agent-image-larger" />
                 <h3 className="agent-name">{property.userName}</h3>
               </div>
               <p className="contact-instructions">Completa tus datos para habilitar los medios de contacto</p>

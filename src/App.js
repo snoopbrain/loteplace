@@ -11,7 +11,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './pages/authentication/Login';
 import Register from './pages/authentication/Register';
-import MyProperties from './pages/MyProperties';
+import MyProperties from './pages/admin/MyProperties';
 
 export const AuthContext = createContext(null);
 

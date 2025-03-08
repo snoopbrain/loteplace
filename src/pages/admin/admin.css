@@ -4,3 +4,13 @@
     align-items: center;
     min-height: 50vh;
 }
+
+.property-card {
+    transition: transform 0.2s;
+}
+
+.property-card:hover {
+    transform: scale(1.02);
+}
+
+  
